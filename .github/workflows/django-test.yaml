@@ -12,8 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: p13user
+      POSTGRES_PASSWORD: 0000
       POSTGRES_HOST: localhost
       POSTGRES_DB: ocp13dbtest
       POSTGRES_PORT: 5432

@@ -45,4 +45,5 @@ jobs:
           python manage.py migrate
       - name: Run Tests
         run: |
+          cd fastformule
           python manage.py test

@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+        <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+        <!-- Custom fonts for this template-->
+        <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+        <!-- Fontawesome-->
+        <script src="https://kit.fontawesome.com/7df9a3d2b0.js" crossorigin="anonymous"></script>
+    </head>
+<body>
+<div id="wrapper">
+    <ul class="navbar-nav sidebar text-primary accordion font-weight-bold" id="accordionSidebar">
+        <div class="sidebar-brand-icon">
+            <a class="nav-link my-2 mx-2" href="{% url 'homepage' %}" aria-expanded="true">
+            <img src="{% static 'img/ff1-blanc-logo.png' %}" style="width:100%">
+            </a>
+        </div>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item border-left-success">
+            <a class="nav-link" href="#" aria-expanded="true">
+                <span>Championnat en cours</span>
+            </a>
+        </li>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item border-left-warning">
+            <a class="nav-link" href="#" aria-expanded="true">
+                <span>Saisons passées</span>
+            </a>
+        </li>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item border-left-success">
+            <a class="nav-link" href="#" aria-expanded="true">
+                <span>Pilotes de Formule 1</span>
+            </a>
+        </li>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item border-left-warning">
+            <a class="nav-link" href="#" aria-expanded="true">
+                <span>Blog</span>
+            </a>
+        </li>
+    </ul>
+
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <form action="#" class="d-none d-sm-inline-block form-inline mr-auto navbar-search" method="GET">
+                    <input type="text" name="q" class="form-control bg-light border-0 small" placeholder="Rechercher" aria-label="Rechercher" aria-describedby="basic-addon2">
+                </form>
+                <ul class="navbar-nav ml-auto">
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account' %}">
+                            <i class="fas fa-user"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="navbar-nav ml-auto">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+{% block content %}
+
+{% endblock %}
+        </div>
+    </div>
+<footer>
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Ajax -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+</footer>
+</div>
+</body>
+</html>

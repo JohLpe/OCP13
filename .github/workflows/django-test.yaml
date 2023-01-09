@@ -18,20 +18,6 @@ jobs:
       POSTGRES_DB: ocp13dbtest
       POSTGRES_PORT: 5432
       DJANGO_SECRET_KEY: not-an-actual-key-but-okay
-    services:
-      postgres_main:
-        image: postgres:13
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -44,14 +30,6 @@ jobs:
         run: |
           pip install -r requirements.txt
       - name: Run Tests
-        env:
-          DEBUG: "0"
-          DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
-          DB_USERNAME: ${{ env.POSTGRES_USER }}
-          DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          DB_HOST: ${{ env.POSTGRES_HOST }}
-          DB_DATABASE: ${{ env.POSTGRES_DB }}
-          DB_PORT: ${{ env.POSTGRES_PORT }}
         run: |
           cd fastformule
           python manage.py test

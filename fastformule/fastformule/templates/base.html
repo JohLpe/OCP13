@@ -17,25 +17,25 @@
 <div id="wrapper">
     <ul class="navbar-nav sidebar text-primary accordion font-weight-bold" id="accordionSidebar">
         <div class="sidebar-brand-icon">
-            <a class="nav-link my-2 mx-2" href="{% url 'homepage' %}" aria-expanded="true">
+            <a class="nav-link my-2 mx-2" href="{% url 'current' %}" aria-expanded="true">
             <img src="{% static 'img/ff1-blanc-logo.png' %}" style="width:100%">
             </a>
         </div>
         <hr class="sidebar-divider my-0">
         <li class="nav-item border-left-success">
-            <a class="nav-link" href="#" aria-expanded="true">
+            <a class="nav-link" href="{% url 'current' %}" aria-expanded="true">
                 <span>Championnat en cours</span>
             </a>
         </li>
         <hr class="sidebar-divider my-0">
         <li class="nav-item border-left-warning">
-            <a class="nav-link" href="#" aria-expanded="true">
+            <a class="nav-link" href="{% url 'seasons' %}" aria-expanded="true">
                 <span>Saisons passées</span>
             </a>
         </li>
         <hr class="sidebar-divider my-0">
         <li class="nav-item border-left-success">
-            <a class="nav-link" href="#" aria-expanded="true">
+            <a class="nav-link" href="{% url 'driver_page' %}" aria-expanded="true">
                 <span>Pilotes de Formule 1</span>
             </a>
         </li>

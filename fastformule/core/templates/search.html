@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<section>
+    <div class="container h-100">
+    {% for queryset in results %}
+    {% for query_key, query_list in queryset.items %}
+    {% if query_key == "driver_query" %}
+        <div class="card mb-4 m-md-2">
+            <div class="card-header py-2">
+                <h4>Résultats de recherche pilotes </h4>
+            </div>
+            <div class="card-body">
+                <ul class="mt-3">
+                {% for driver in query_list %}
+                <li><a href="{% url 'driver_info' driver_slug=driver.slug_name %}">{{ driver.full_name }}</a></li>
+                {% empty %}
+                <p>Pas de résultats de recherche pour les pilotes</p>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if query_key == "gp_query" %}
+        <div class="card mb-4 m-md-2">
+            <div class="card-header py-2">
+                <h4>Résultats de recherche Grand Prix</h4>
+            </div>
+            <div class="card-body">
+                <table class="table-bordered" style="width: 100%;">
+                    <thead class="table thead th">
+                        <tr>
+                            <th>Rechercher par nom</th>
+                            <th>Rechercher par circuit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table tbody">
+                        <tr>
+                            <td>
+                                <ul>{% for gp_by_name in query_list.0 %}
+                                    <li>
+                                        <a href="{% url 'gp_results' year=gp_by_name.year.year gp_slug=gp_by_name.gp_slug_name %}">{{ gp_by_name.gp_name }} de {{ gp_by_name.year.year }}</a>
+                                    </li>
+                                {% empty %}
+                                    <li>Pas de Grand Prix à ce nom.</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>{% for gp_by_track in query_list.1 %}
+                                    <li>
+                                        <a href="{% url 'gp_results' year=gp_by_track.year.year gp_slug=gp_by_track.gp_slug_name %}">{{ gp_by_track.gp_name }} {{ gp_by_track.year.year }}</a>
+                                    </li>
+                                    {% empty %}
+                                    <li> Pas de résultats.</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if query_key == "championship_query" %}
+        <div class="card mb-4 m-md-2">
+            <div class="card-header py-2">
+                <h4>Résultats de recherche saisons</h4>
+            </div>
+            <div class="card-body">
+                <ul class="mt-3">
+                {% for championship in query_list %}
+                    <li>
+                        <a href="{% url 'calendar' year=championship.year %}">Saison {{ championship.year }}</a>
+                    </li>
+                {% empty %}
+                    <li>Pas de résultats de recherche pour les saisons de formule 1</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if query_key == "art_query" %}
+        <div class="card mb-4 m-md-2">
+            <div class="card-header py-2">
+                <h4>Résultats de recherche blog</h4>
+            </div>
+            <div class="card-body">
+                <ul class="mt-3">
+                {% for article in query_list %}
+                    <li><a href="{% url 'viewArticle' slug=article.a_slug %}">{{ article.a_title }}</a></li>
+                {% empty %}
+                <li>Pas de résultats de recherche sur le blog</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+    {% endfor %}
+    </div>
+    <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm my-3 ml-4" href="#top">
+        <i class="fas fa-chevron-up mr-1"></i>
+          Revenir en haut de la page
+      </a>
+</section>
+
+{% endblock %}

@@ -26,5 +26,6 @@ handler500 = 'fastformule.views.error_500'
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
+    path('', include('core.urls')),
     path('admin/', admin.site.urls),
 ]

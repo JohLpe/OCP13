@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% load i18n %}
+
+<section class="mb-4">
+  <div class="container h-100">
+
+    <div class="list-inline mb-5 mt-5">
+      {% if gp_info.year.year == current_year %}
+      <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm ml-2 list-inline-item" href="{% url 'current' %}">
+        <i class="fas fa-chevron-left mr-1"></i>
+          Revenir à la saison en cours
+      </a>
+      {% else %}
+      <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm ml-2 list-inline-item" href="{% url 'calendar' year=gp_info.year.year %}">
+        <i class="fas fa-chevron-left mr-1"></i>
+          Revenir à la saison {{ gp_info.year.year }}
+      </a>
+      {% endif %}
+      <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm ml-2 list-inline-item" href="{% url 'seasons' %}">
+        <i class="fas fa-chevron-left mr-1"></i>
+          Revenir à la page des saisons
+      </a>
+    </div>
+
+    <div class="card text-black mb-4" style="border-radius: 25px; width: auto;">
+        <div class="card-header py-3">
+            <h4 class="font-weight-bold text-info">Informations</h4>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><b>Nom de l'évènement</b></li>
+              <ul>{{ gp_info.gp_name }}</li></ul>
+            <li><b>Lieu</b></li>
+            <ul>{{ gp_info.circuit.track_name }}, {{ gp_info.circuit.country }}</p></ul>
+          </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+  <div class="container h-100">
+    <ul class="nav nav-tabs">
+      {% for sessions in weekend_results.keys %}
+      <li class="nav-item">
+        {% if sessions == 'Qualifications' %}
+        <a class="nav-link text-info" href=#qualifications data-toggle="tab">Qualifications</a>
+        {% elif sessions == 'Course' %}
+        <a class="nav-link active text-info" href=#course data-toggle="tab">Course</a>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade" id=qualifications>
+        {% for session, results in weekend_results.items %}
+        {% if session == 'Qualifications' %}
+        <table class="table-striped table-bordered" style="width: 100%;">
+          <thead class="table thead th">
+            {% language 'fr' %}
+            <tr>
+              <td colspan="5"> Le {{ results.0.1.session_date }}</td>
+            </tr>
+            {% endlanguage %}
+            
+            <tr>
+              <th style="width: 10%;">Classement</th>
+              <th style="width: 30%;">Pilote</th>
+              <th style="width: 20%;">Temps de Q1</th>
+              <th style="width: 20%;">Temps de Q2</th>
+              <th style="width: 20%;">Temps de Q3</th>
+            </tr>
+          </thead>
+          <tbody class="table tbody">
+            {% for quali_rslts in results %}
+            {% for rank, driver_results in quali_rslts.items %}
+            <tr>
+              <td>{{ rank }}</td>
+              <td><a href="{% url 'driver_info' driver_slug=driver_results.driver.slug_name %}">{{ driver_results.driver.full_name}}</a></td>
+              <td>{{ driver_results.q1 }}</td>
+              <td>{{ driver_results.q2 }}</td>
+              <td>{{ driver_results.q3 }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="tab-pane fade show active" id=course>
+        {% for session, results in weekend_results.items %}
+        {% if session == 'Course' %}
+        <table class="table-striped table-bordered" style="width: 100%;">
+          <thead class="table thead th">
+            {% language 'fr' %}
+            <tr>
+              <td colspan="6">Le {{ results.1.session_date|date:'d F Y' }}</td>
+            </tr>
+            {% endlanguage %}
+            <tr>
+                <th>Classement</th>
+                <th>Pilote</th>
+                <th>Position de départ</th>
+                <th>Points</th>
+                <th>Temps de course</th>
+                <th>Status</th>
+            </tr>
+          </thead>
+          <tbody class="table tbody">
+            {% for driver_results in results %}
+            <tr>
+                <td>{{ driver_results.end_pos }}</td>
+                <td><a href="{% url 'driver_info' driver_slug=driver_results.driver.slug_name %}">{{ driver_results.driver.full_name }}</a></td>
+                <td>{{ driver_results.start_pos }}</td>
+                <td>{{ driver_results.points }}</td>
+                <td>{{ driver_results.race_time }}</td>
+                <td>{{ driver_results.finish_status }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          </table>
+          {% endif %}
+          {% endfor %}
+        </div>
+    </div>
+    <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm mb-3 ml-2 mt-3" href="#top">
+      <i class="fas fa-chevron-up mr-1"></i>
+        Revenir en haut de la page
+    </a>
+  </div>
+</section>
+{% endblock %}

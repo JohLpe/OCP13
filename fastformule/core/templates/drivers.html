@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+{% csrf_token %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+     
+        const submitLetter = letter => {
+            const formData = new FormData()
+            formData.append('letter', letter)
+     
+            let csrfTokenValue = document.querySelector('[name=csrfmiddlewaretoken]').value
+     
+            const request = new Request('{% url "getdriver" %}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrfTokenValue }
+            })
+     
+            fetch(request)
+                .then(response => response.json())
+                .then(result => {
+                    let jsp_current_page = 1;
+                    const jsp_records_per_page = 10;
+                    let page_span = document.querySelector(`#page-${letter}`);
+
+                    function jsp_num_pages() {
+                    return Math.ceil(JSON.parse(result).length / jsp_records_per_page);
+                }
+
+                    function jsp_next_page() {
+                    if (jsp_current_page < jsp_num_pages()) {
+                        jsp_current_page++;
+                        jsp_change_page(jsp_current_page);
+                    }
+                }
+                    function jsp_prev_page() {
+                        if (jsp_current_page > 1) {
+                            jsp_current_page--;
+                            jsp_change_page(jsp_current_page);
+                        }
+                    }
+
+                    function jsp_change_page(page) {
+                    const btn_prev = document.querySelector(`#btn-prev-${letter}`);
+                    const btn_next = document.querySelector(`#btn-next-${letter}`);
+                
+                    if (page < 1) {
+                        page = 1;
+                    }
+                    if (page > jsp_num_pages()) {
+                        page = jsp_num_pages();
+                    }
+
+                    const table = document.querySelector(`#driver-table-${letter} > tbody`)
+                    table.innerHTML = ''
+                    for (let i = (page - 1) * jsp_records_per_page; i < (page * jsp_records_per_page) && i < JSON.parse(result).length; i++) {
+                        table.innerHTML += `<tr class="d-table-row"><td><a class="ml-5" href="/pilotes/${JSON.parse(result)[i].fields.slug_name}">${JSON.parse(result)[i].fields.last_name}, ${JSON.parse(result)[i].fields.first_name}</a></td></tr> <hr>`
+                }
+                    page_span.innerHTML = `${page}/${jsp_num_pages()}`
+
+                    btn_prev.style.display = (page === 1) ? 'none' : 'inline-block';
+                    btn_next.style.display = (page === jsp_num_pages()) ? 'none' : 'inline-block';
+                }
+
+                    const prevPageButton = document.querySelectorAll(`#btn-prev-${letter}`)
+
+                    if (prevPageButton.length) {
+                        prevPageButton.forEach(prevButton => {
+                            prevButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                jsp_prev_page()
+                            })
+                        })
+                    }
+
+                    const nextPageButton = document.querySelectorAll(`#btn-next-${letter}`)
+
+                    if (nextPageButton.length) {
+                        nextPageButton.forEach(nextButton => {
+                            nextButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                jsp_next_page()
+                        })
+                        })
+                    }
+                    jsp_change_page(1)
+        })}
+     
+        const letterButtons = document.querySelectorAll('.goto-letter')
+     
+        if (letterButtons.length) {
+            console.log(letterButtons)
+            letterButtons.forEach(button => {
+                button.addEventListener('click', event => {
+                    event.preventDefault()
+                    submitLetter(button.value)
+                })
+            })
+        }
+})
+</script>
+{% endblock javascript %}
+
+<section>
+    <div class="container h-100">
+        <div class="accordion" id="driver-accordion">
+        {% for letter in letters %}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h1 class="text-info">
+                        <button type="button" class="btn btn-link text-info goto-letter font-weight-bold" data-toggle="collapse" data-target="#{{ letter }}" name="getletter" value="{{ letter }}">{{ letter }}</button>
+                    </h1>
+                </div>
+                <div id={{ letter }} class="collapse" data-parent="#driver-accordion">
+                    <div class="card-body">
+                        <table class="d-table" id="driver-table-{{ letter }}" style="width: 100%;">
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="ml-5">
+                        <a href="#" class="mr-5" id="btn-prev-{{ letter }}"><i class="fas fa-chevron-left mr-1"></i></a>
+                        <a href="#" id="btn-next-{{ letter }}"><i class="fas fa-chevron-right mr-1"></i></a>
+                    </p>
+
+                    <p class="ml-4 font-weight-lighter text-xs">Page <span id="page-{{ letter }}"></span></p>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm mb-3 ml-2 mt-3" href="#top">
+            <i class="fas fa-chevron-up mr-1"></i>
+              Revenir en haut de la page
+        </a>
+    </div>
+</section>
+
+{% endblock %}

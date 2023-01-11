@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% load i18n %}
+
+<section>
+    <div class="container h-100">
+        <div class="card text-black mb-4" style="border-radius: 25px; width: auto;">
+            <div class="card-header py-3">
+                <h3 class="font-weight-bold text-info">Résumé</h3>
+            </div>
+            <div class="card-body">
+                <div class="d-inline-flex justify-content-center lign-items-center mb-3">
+                    <h3 class="font-weight-bold">{{ driver_profile.full_name }}</h3>
+                    {% if driver_profile.wiki_link is not None %}
+                    <a class="ml-2" href="{{ driver_profile.wiki_link}}" target="_blank" rel="noreferrer noopener"><i class="fas fa-external-link-alt"></i></a>
+                    {% endif %}
+                </div>
+                <ul><b>Nationalité</b>
+                    <ul>
+                        <li>{{ driver_profile.nationality }}</li>
+                    </ul>
+                </ul>
+                <ul><b>Né le</b>
+                    <ul>{% language 'fr' %}
+                        <li>{{ driver_profile.dob }}</li>
+                        {% endlanguage %}
+                    </ul>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container h-100">
+        <div class="card text-black mb-4" style="border-radius: 25px; width: auto;">
+            <div class="card-header py-3">
+                <h3 class="font-weight-bold text-info">Palmarès</h3>
+            </div>
+            <div class="card-body">
+                <ul><b>Nombre d'entrées</b>
+                    <ul>
+                        <li>{{ driver_rslts.count }}</li>
+                    </ul>
+                </ul>
+                {% if driver_win_rslts.count > 0 %}
+                <ul><b>Victoire(s)</b>
+                    <ul>
+                        <li>{{ driver_win_rslts|length }}</li>
+                    </ul>
+                </ul>
+                {% else %} 
+                <ul><b>Victoire(s)</b>
+                    <ul>
+                        <li>0</li>
+                    </ul>
+                </ul>     
+                {% endif %}
+                <ul><b>Podium(s)</b>
+                    <ul>
+                        <li>{{ driver_podium_rslts.count }}</li>
+                    </ul>
+                </ul>
+                <ul><b>Championnat(s) remporté(s)</b>
+                    <ul>
+                        <li>{{ driver_ch_rslts.count }} 
+                            {% if driver_ch_rslts.count > 0 %}
+                            (
+                            {% for championship in driver_ch_rslts %}
+                            {{ championship.year.year }}
+                            {% endfor %}
+                            )
+                            {% endif %}
+                        </li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container h-100">
+        <div class="card mb-4">
+            <div class="card-header py-3">
+                <h3 class="font-weight-bold text-info">A participé à </h3>
+            </div>
+            <div class="card-body">
+                {% regroup driver_rslts by gp_id.year.year as per_year %}
+
+                {% for year in per_year %}
+                <table class="table table-striped table-bordered table-sm mb-5">
+                    <thead class="table thead th">
+                        <h3 class="card-header" >Saison {{ year.grouper }}</h3>
+                        <tr>
+                            <th style="width: 30%;">Grand Prix</th>
+                            <th style="width: 30%;">Classement à l'arrivée</th>
+                            <th style="width: 40%;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table tbody">
+                        {% for rslt in year.list %}
+                        <tr>
+                            <td><a href="{% url 'gp_results' year=year.grouper gp_slug=rslt.gp_id.gp_slug_name %}">{{ rslt.gp_id.gp_name }}</a></td>
+                            <td>{{ rslt.end_pos }}</td>
+                            <td>{{ rslt.finish_status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% for d_standing in driver_standings %}
+                    {% if d_standing.year.year == year.grouper %}
+                    <tfoot>
+                        <tr>
+                            <td class="font-weight-bold">Classement au championnat: {{ d_standing.driver_rank }}</td>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                    {% endfor %}
+                </table>
+                {% endfor %}
+            </div>
+        </div>
+        <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm mb-3 ml-2 mt-3" href="#top">
+            <i class="fas fa-chevron-up mr-1"></i>
+              Revenir en haut de la page
+        </a>
+    </div>
+</section>
+
+{% endblock %}

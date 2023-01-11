@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+{% csrf_token %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+     
+        const submitCountry = (country_slug, country_name) => {
+            const formData = new FormData()
+            formData.append('country_name', country_name)
+     
+            let csrfTokenValue = document.querySelector('[name=csrfmiddlewaretoken]').value
+     
+            const request = new Request('{% url "getcountry" %}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrfTokenValue }
+            })
+     
+            fetch(request)
+                .then(response => response.json())
+                .then(result => {
+                    const circuit = document.querySelector(`.card-body-${country_slug}`)
+                    circuit.innerHTML = ''
+                    for (const [track, gpEvent] of Object.entries(JSON.parse(result))) {
+                        circuit.innerHTML += `<div class="mt-3" ><b class="font-weight-bold">${track}</b><ul class="mb-2"></div>`
+                        JSON.parse(gpEvent).forEach(gp => {
+                            circuit.innerHTML += `<li class="ml-3"><a href="/saisons/${gp.fields.year}/${gp.fields.gp_slug_name}">${gp.fields.gp_name} ${gp.fields.year}</a></li>`
+                        })
+                        }                    
+                })
+        }
+     
+        const countryButtons = document.querySelectorAll('.goto-country')
+     
+        if (countryButtons.length) {
+            countryButtons.forEach(button => {
+                button.addEventListener('click', event => {
+                    event.preventDefault()
+                    submitCountry(button.value, button.textContent)
+                })
+            })
+        }
+    })
+</script>
+{% endblock javascript %}
+
+<section>
+    <div class="container h-100">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+            <a class="nav-link active text-info" href="#yearly-season" data-toggle="tab">Par années</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-info" href="#country-season" data-toggle="tab">Par pays</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="yearly-season">
+                <div class="row ml-md-3">
+                    {% for decade, year_list in seasons.items %}
+                    <div class="card shadow mb-4 m-md-2" id="{{ decade }}0">
+                        <div class="card-header py-3">
+                            <h4 class="font-weight-bold text-info pt-2">Années {{ decade }}0</h4>
+                        </div>
+                        <div class="card-body">
+                            {% for year in year_list %}
+                            <p class="text-center h5 py-2"><a href="{% url 'calendar' year=year %}">{{ year }}</a></p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="country-season">
+                <div class="accordion" id="country-accordion">
+                    {% for country, country_slug in by_country.items %}
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h1 class="font-weight-bolder text-info">
+                                    <button  class="btn btn-link text-info goto-country" data-toggle="collapse" data-target="#{{ country_slug }}" value="{{ country_slug }}">{{ country }}</button>
+                                </h1>
+                            </div>
+                            <div id="{{ country_slug }}" class="collapse" data-parent="#country-accordion">
+                                <div class="card-body card-body-{{ country_slug }}">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <a class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm mb-3 ml-2 mt-3" href="#top">
+            <i class="fas fa-chevron-up mr-1"></i>
+              Revenir en haut de la page
+        </a>
+    </div>
+</section>
+{% endblock %}

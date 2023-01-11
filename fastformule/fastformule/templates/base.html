@@ -51,7 +51,7 @@
         <div id="content">
             
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                <form action="#" class="d-none d-sm-inline-block form-inline mr-auto navbar-search" method="GET">
+                <form action="{% url 'search_results' %}" class="d-none d-sm-inline-block form-inline mr-auto navbar-search" method="GET">
                     <input type="text" name="q" class="form-control bg-light border-0 small" placeholder="Rechercher" aria-label="Rechercher" aria-describedby="basic-addon2">
                 </form>
                 <ul class="navbar-nav ml-auto">
@@ -62,13 +62,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{% url 'logout' %}">
                             <i class="fas fa-sign-out-alt"></i>
                         </a>
                     </li>
                     {% else %}
                     <li class="navbar-nav ml-auto">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{% url 'login' %}">
                             <i class="fas fa-sign-in-alt"></i>
                         </a>
                     </li>

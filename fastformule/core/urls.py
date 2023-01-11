@@ -3,9 +3,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('search/', views.search_results, name='search_results'),
+    path('recherche/', views.search_results, name='search_results'),
     path('saisons/', views.seasons_page, name='seasons'),
-    path('saisons/current/', views.current_year_page, name='current'),
+    path('saisons/actuelle/', views.current_year_page, name='current'),
     path('saisons/<int:year>/', views.calendar_page, name='calendar'),
     path('saisons/get-info/', views.get_standings, name='getyearlyinfo'),
     path('saisons/<int:year>/<slug:gp_slug>/',

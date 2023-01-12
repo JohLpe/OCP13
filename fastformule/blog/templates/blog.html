@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+<section class="mt-5">
+    {% if request.user.is_staff %}
+    <div class="ml-4 mb-4">
+        <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" href="{% url 'addArticle' %}">
+            <i class="fas fa-plus mr-1"></i>
+            Ajouter un article
+        </a>
+    </div>
+
+    {% endif %}
+    <div class="container h-100">
+        {% for article in page_obj %}
+        <article>
+            <h4> {{ article.a_title }}</h4>
+            <p>{{ article.a_content|truncatewords:50 }}</p>
+            <p><a href="{% url 'viewArticle' slug=article.a_slug %}">Voir la suite de l'article</a></p>
+        </article>
+        <hr>
+        {% empty %}
+        <article class="mt-3">
+            <h3>Il n'y a pas d'article pour le moment</h3>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<footer class="pb-4">
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination ml-4">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; 1</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}.
+            </span>
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Suivant</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }} &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</footer>
+
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% load i18n %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+     
+        const submitEdit = comment => {
+
+            function updateComment(commentid, content) {
+                     
+                let csrfTokenValue = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+                const formData = new FormData()
+                formData.append('comment', commentid)
+                formData.append('content', content)
+
+                const request = new Request("{% url 'editComment' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': csrfTokenValue
+                        }})
+
+                fetch(request)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result)
+                    result.forEach( edition => {
+                        console.log(edition)
+                        console.log(edition.fields.comment_content)
+
+                        const saveBut = document.querySelector(`#save${commentid}`)
+                        saveBut.parentNode.removeChild(saveBut)
+
+                        const editButtons = document.querySelectorAll('a.goto-edit')
+                        const newP = document.createElement('p')
+                        newP.innerHTML += edition.fields.comment_content
+
+                        const edited = document.querySelector(`#comment${commentid}`)
+                        const itsChildren = edited.childNodes
+
+                        edited.replaceChild(newP, itsChildren[1])
+
+                        editButtons.forEach( button =>{
+                            button.style.visibility ="visible"
+                        })
+                    })
+                })
+
+            }
+
+            const commentid = comment.slice(4)
+
+            const toEdit = document.querySelector(`#comment${commentid}`)
+            const children = toEdit.childNodes
+            const formerContent = children[1].innerHTML
+            const newChild = document.createElement('textarea')
+            newChild.setAttribute('class', 'form-control')
+            newChild.setAttribute('cols', '40')
+            newChild.setAttribute('rows', '10')
+            newChild.setAttribute('id', `newtext${commentid}`)
+            newChild.innerHTML = formerContent
+            toEdit.replaceChild(newChild, children[1])
+            const modPanel = document.querySelector(`#moderate-panel-${commentid}`)
+            const newEditButton = document.createElement('a')
+            newEditButton.setAttribute('class', "d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm ml-2")
+            newEditButton.setAttribute('id', `save${commentid}`)
+            newEditButton.innerHTML += `<i class="fas fa-edit"></i>
+                            Enregistrer`
+            modPanel.insertBefore(newEditButton, modPanel.childNodes[2])
+
+            const getBut = document.querySelector(`#save${commentid}`)
+            getBut.addEventListener('click', event => {
+                    event.preventDefault()
+
+                    const newComment = document.querySelector(`#newtext${commentid}`)
+                    const newContent = newComment.value
+                    updateComment(commentid, newContent)
+                    })}
+     
+
+        const editButtons = document.querySelectorAll('a.goto-edit')
+     
+        if (editButtons.length) {
+            editButtons.forEach(button => {
+                button.addEventListener('click', event => {
+                    event.preventDefault()
+                    button.style.visibility = 'hidden'
+                    submitEdit(button.id)
+                })
+            })
+        }
+})
+</script>
+{% endblock javascript %}
+
+<section>
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-12 col-xl-11">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4>{{ article.a_title }}</h4>
+                </div>
+                <div class="card-body">
+                    <p>{{ article.a_content|linebreaks }}</p>
+                </div>
+            </div>
+
+            {% if user.is_staff %}
+            <a class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mb-5 ml-2" href="{% url 'delArticle' art_id=article.id %}">
+                <i class="fas fa-minus mr-1"></i>
+                Supprimer l'article
+            </a>
+            {% endif %}
+
+        </div>
+      </div>
+    </div>
+</section>
+
+<section class="vh-100">
+    <div class="container h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-12 col-xl-11">
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="mb-5">
+                        <div class="card mb-2">
+                            <div class="card-header" id="{{comment.id}}">
+                                {% language 'fr' %}
+                                <h4>{{ comment.by_user }}</h4><h6>{{ comment.created_on|date:"d/m/y H:i" }}</h6>
+                                {% endlanguage %}
+                            </div>
+                            <div class="card-body" id="comment{{comment.id}}">
+                                {{ comment.comment_content|linebreaks }}
+                            </div>
+                        </div>
+                        {% if user.id == comment.by_user.id or user.is_staff %}
+                        <div id="moderate-panel-{{comment.id}}">
+                        <a class="d-none d-sm-inline-block btn btn-danger btn-sm shadow-sm ml-2" href="{% url 'delComment' comm_id=comment.id %}">
+                            <i class="fas fa-trash-alt"></i>
+                            Supprimer
+                        </a>
+                        <a class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm ml-2 goto-edit" id="edit{{comment.id}}" href="#">
+                            <i class="fas fa-edit"></i>
+                            Modifier
+                        </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                <form class="mx-1 mx-md-4" method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <div class="flex-fill mb-0">
+                          {{ form.comment_content }}
+                        </div>
+                      </div>
+                
+                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                        <button type="submit" class="btn btn-primary btn-lg" name="Create Comment">Commenter</button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

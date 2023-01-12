@@ -5,6 +5,7 @@ from .models import ChampionshipYear, GPEvent,\
                     Circuit,\
                     DriverChampionshipResults,\
                     TeamChampionshipResults
+from blog.models import Article
 import datetime
 from math import trunc
 import string
@@ -221,14 +222,18 @@ def search_results(request):
                 gp_filter_by_name = GPEvent.objects.filter(year=nb_search, gp_name__icontains=query)
                 gp_filter_by_track = GPEvent.objects.filter(year=nb_search, circuit__track_name__icontains=query)
                 championship_filter = ChampionshipYear.objects.filter(year=nb_search)
+                art_filter = Article.objects.filter(a_title__icontains=query).order_by("-a_pub_date")
                 results.append({"gp_query": [gp_filter_by_name, gp_filter_by_track]})
                 results.append({"championship_query": championship_filter})
+                results.append({'art_query': art_filter})
             else:
                 driver_filter = Driver.objects.filter(full_name__icontains=query)
                 gp_filter_by_name = GPEvent.objects.filter(gp_name__icontains=query).order_by("year")
                 gp_filter_by_track = GPEvent.objects.filter(circuit__track_name__icontains=query).order_by("year")
+                art_filter = Article.objects.filter(a_title__icontains=query).order_by("-a_pub_date")
                 results.append({"driver_query": driver_filter})
                 results.append({"gp_query": [gp_filter_by_name, gp_filter_by_track]})
+                results.append({'art_query': art_filter})
 
     return render(request, 'search.html',
                   context={'results': results})

@@ -8,8 +8,11 @@ class BlogViewTest(TestCase):
     def setUp(cls):
         cls.c = Client()
 
-    def test_blog_page(self):
-        """Tests that the blog page is accessible"""
+    def test_page_redirect(self):
+        """Tests that homepage is accessible"""
 
         response = self.c.get(reverse('homepage'))
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response,
+                             expected_url="/saisons/actuelle/",
+                             status_code=302,
+                             target_status_code=200)

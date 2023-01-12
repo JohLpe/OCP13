@@ -30,7 +30,7 @@ class BlogViewTest(TestCase):
 
         response = self.c.get(reverse('logout'), follow=True)
         self.assertRedirects(response,
-                             expected_url="/saisons/current/",
+                             expected_url="/saisons/actuelle/",
                              status_code=302,
                              target_status_code=200)
 

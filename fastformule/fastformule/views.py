@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 def homepage(request):
     """Renders website homepage"""
 
-    return render(request, 'index.html')
+    return redirect('current')
 
 
 def error_400(request, exception):

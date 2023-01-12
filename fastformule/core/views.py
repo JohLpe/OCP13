@@ -96,8 +96,6 @@ def get_standings(request):
     if request.method == 'POST':
         year = request.POST.get('year')
         tableid = request.POST.get('tableid')
-        for thing in DriverChampionshipResults.objects.filter(year=year).order_by("driver_rank"):
-            print(thing.driver, thing.driver_rank)
         if tableid == "table-d-ch":
             response = serializers.serialize("json", DriverChampionshipResults.objects.filter(year=year).order_by("driver_rank"))
         elif tableid == "table-c-ch":
@@ -144,8 +142,6 @@ def gp_results(request, year, gp_slug):
         if session == 'Qualifications':
             quali_session = SessionResults.objects.filter(gp_id=gp_info,
                                                           session_type=session)
-            for stuff in quali_session:
-                print(stuff.driver, stuff.end_pos)
             quali_rank = []
             rank = 1
             for quali_rslts in quali_session:

@@ -21,7 +21,7 @@ class Command(BaseCommand):
         load_dotenv()
         date = datetime.date.today()
 
-        for year in range(2021, date.year):
+        for year in range(1950, date.year):
             if ChampionshipYear.objects.filter(year=year):
                 print("Year {} already added.".format(year))
             else:

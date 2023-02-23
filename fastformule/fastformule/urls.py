@@ -24,10 +24,14 @@ handler404 = 'fastformule.views.error_404'
 
 handler500 = 'fastformule.views.error_500'
 
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
 urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('', include('core.urls')),
     path('', include('user.urls')),
     path('', include('blog.urls')),
     path('admin/', admin.site.urls),
+    path('sentry-debug/', trigger_error),
 ]
